@@ -1,6 +1,5 @@
 package com.facol.restaurant.dto;
 
-import com.facol.restaurant.entity.TagEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantRequestDTO {
-    private String name;
-    private String address;
-    private TagEnum tag;
+public class ReviewRequestDto {
+    private long userid;
+    private long restaurantId;
+    private String reviewText;
+    private double rating;
 }

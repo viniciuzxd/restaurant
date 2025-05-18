@@ -1,7 +1,9 @@
 package com.facol.restaurant.service;
 
-import com.facol.restaurant.dto.RestaurantResponseDTO;
+import com.facol.restaurant.dto.RestaurantRequestDto;
+import com.facol.restaurant.dto.RestaurantResponseDto;
 import com.facol.restaurant.entity.RestaurantEntity;
+import com.facol.restaurant.entity.Enum.RestaurantEnum;
 import com.facol.restaurant.exception.NotFoundException;
 import com.facol.restaurant.repository.RestaurantRepositoy;
 import org.springframework.data.domain.Page;
@@ -21,9 +23,9 @@ public class RestaurantService {
         this.restaurantRepositoy = restaurantRepositoy;
     }
 
-    public RestaurantResponseDTO getRestaurantById(long id) {
+    public RestaurantResponseDto getRestaurantById(long id) {
         return restaurantRepositoy.findById(id)
-                .map(u -> new RestaurantResponseDTO(
+                .map(u -> new RestaurantResponseDto(
                         u.getId(),
                         u.getName(),
                         u.getAddress(),
@@ -32,7 +34,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
     }
 
-    public Page<RestaurantResponseDTO> getRestaurants() {
+    public Page<RestaurantResponseDto> getRestaurants() {
         return findAll();
     }
 
@@ -40,7 +42,7 @@ public class RestaurantService {
     /*
         Retorna todos os restaurantes paginados
     */
-    public Page<RestaurantResponseDTO> findAll() {
+    public Page<RestaurantResponseDto> findAll() {
         int page = 0;
         int size = 10;
         PageRequest pageRequest = PageRequest.of(
@@ -57,10 +59,10 @@ public class RestaurantService {
         map: para cada elemento da lista(restaurant), transforma em um novo objeto RestaurantResponse
         collect: transformar todos os elementos do stream, você coleta tudo de volta em uma Lista
         */
-        List<RestaurantResponseDTO> dtoList = restaurantList
+        List<RestaurantResponseDto> dtoList = restaurantList
                 .getContent()
                 .stream()
-                .map(restaurant -> new RestaurantResponseDTO(
+                .map(restaurant -> new RestaurantResponseDto(
                         restaurant.getId(),
                         restaurant.getName(),
                         restaurant.getAddress(),
@@ -69,5 +71,28 @@ public class RestaurantService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(dtoList, pageRequest, restaurantList.getTotalElements());
+    }
+
+    public void createRestaurant(RestaurantRequestDto restaurantCreate) {
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setName(restaurantCreate.getName());
+        restaurantEntity.setAddress(restaurantCreate.getAddress());
+        restaurantEntity.setTag(RestaurantEnum.INDEFINIDO);
+
+        restaurantRepositoy.save(restaurantEntity);
+    }
+
+    public void updateRestaurant(long id, RestaurantRequestDto restaurantUpdate) {
+        RestaurantEntity restaurant = restaurantRepositoy.findById(id)
+                .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+        restaurant.setName(restaurantUpdate.getName());
+        restaurant.setAddress(restaurantUpdate.getAddress());
+        restaurantRepositoy.save(restaurant);
+    }
+
+    public void delete(long id) {
+        RestaurantEntity restaurant = restaurantRepositoy.findById(id)
+                .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+        restaurantRepositoy.delete(restaurant);
     }
 }

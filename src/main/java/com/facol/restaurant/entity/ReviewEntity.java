@@ -18,11 +18,13 @@ public class ReviewEntity {
     @JoinColumn(name = "author", referencedColumnName = "name")
     private UserEntity author;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "restaurantId", referencedColumnName = "id")
     private RestaurantEntity restaurant;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private UserEntity user;
+
+    private double rating;
 }

@@ -1,8 +1,13 @@
 package com.facol.restaurant.entity;
 
+import com.facol.restaurant.entity.Enum.RestaurantEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -15,5 +20,10 @@ public class RestaurantEntity {
     private String name;
     private String address;
     @Enumerated(EnumType.STRING)
-    private TagEnum tag;
+    private RestaurantEnum tag;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<ReviewEntity> reviews = new ArrayList<>();
+
 }

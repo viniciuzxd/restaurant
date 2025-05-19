@@ -14,8 +14,8 @@ public class ReviewEntity {
     private long id;
     private String reviewText;
 
-    @OneToOne
-    @JoinColumn(name = "author", referencedColumnName = "name")
+    @ManyToOne
+    @JoinColumn(name = "author", referencedColumnName = "id")
     private UserEntity author;
 
     @ManyToOne

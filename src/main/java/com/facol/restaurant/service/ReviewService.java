@@ -30,26 +30,24 @@ public class ReviewService {
     }
 
     public ReviewResponseDto getReviewById(long id) {
-        ReviewResponseDto review = reviewRepository.findById(id)
-                .map(r -> new ReviewResponseDto(
-                        r.getId(),
-                        r.getUser().getId(),
-                        r.getRestaurant().getName(),
-                        r.getAuthor().getName(),
-                        r.getReviewText(),
-                        r.getRating()))
-                .orElseThrow(() -> new NotFoundException("Review não encontrada")
-                );
+        ReviewEntity reviewEntity = reviewRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Review não encontrada"));
+
+        String authorName = (reviewEntity.getAuthor() != null)
+                ? reviewEntity.getAuthor().getName()
+                : "Autor desconhecido";
 
         return new ReviewResponseDto(
-                review.getId(),
-                review.getUserId(),
-                review.getRestaurantName(),
-                review.getAuthor(),
-                review.getReviewText(),
-                review.getRating()
+                reviewEntity.getId(),
+                reviewEntity.getUser() != null ? reviewEntity.getUser().getId() : null,
+                reviewEntity.getRestaurant() != null ? reviewEntity.getRestaurant().getName() : "Restaurante desconhecido",
+                authorName,
+                reviewEntity.getReviewText(),
+                reviewEntity.getRating()
         );
     }
+
+
 
     public Page<ReviewResponseDto> getReviews() {
         return findAll();

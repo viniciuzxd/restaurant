@@ -18,7 +18,7 @@ public class UserEntity {
     private String email;
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<ReviewEntity> reviews = new ArrayList<>();
 }

@@ -39,21 +39,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> patchUser(@PathVariable long id, @RequestBody UserRequestDto parcialUserDto) {
-        UserRequestDto userRequestDto = new UserRequestDto();
-        if (parcialUserDto.getName() != null) {
-            userRequestDto.setName(parcialUserDto.getName());
-        }
-        if (parcialUserDto.getPassword() != null) {
-            userRequestDto.setPassword(parcialUserDto.getPassword());
-        }
-        if (parcialUserDto.getEmail() != null) {
-            userRequestDto.setEmail(parcialUserDto.getEmail());
-        }
-        userService.updateUser(id, userRequestDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable long id) {

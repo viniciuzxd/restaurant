@@ -1,5 +1,6 @@
 package com.facol.restaurant.controller;
 
+import com.facol.restaurant.dto.ReviewCreateDto;
 import com.facol.restaurant.dto.ReviewRequestDto;
 import com.facol.restaurant.dto.ReviewResponseDto;
 import com.facol.restaurant.service.ReviewService;
@@ -32,9 +33,9 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewsByRestaurantId(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Void> createReview(@RequestBody ReviewRequestDto reviewRequestDto) {
-        reviewService.createReview(reviewRequestDto);
+    @PostMapping("/users/{idUsuario}/restaurants/{idRestaurant}")
+    public ResponseEntity<Void> createReview(@RequestBody ReviewCreateDto reviewRequestDto, @PathVariable long idUsuario, @PathVariable long idRestaurant) {
+        reviewService.createReview(reviewRequestDto, idUsuario, idRestaurant);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

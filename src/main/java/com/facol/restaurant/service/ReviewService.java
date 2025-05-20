@@ -1,5 +1,6 @@
 package com.facol.restaurant.service;
 
+import com.facol.restaurant.dto.ReviewCreateDto;
 import com.facol.restaurant.dto.ReviewRequestDto;
 import com.facol.restaurant.dto.ReviewResponseDto;
 import com.facol.restaurant.entity.ReviewEntity;
@@ -85,10 +86,10 @@ public class ReviewService {
     /*
         cria a review, coloca a tag e adiciona a lista das entidades.
     */
-    public void createReview(ReviewRequestDto reviewCreate) {
-        var userEntity = userRepository.findById(reviewCreate.getUserid())
+    public void createReview(ReviewCreateDto reviewCreate, long userId, long restaurantId) {
+        var userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Id do usuário não encontrado"));
-        var restaurantEntity = restaurantRepositoy.findById(reviewCreate.getRestaurantId())
+        var restaurantEntity = restaurantRepositoy.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
 
         ReviewEntity reviewEntity = new ReviewEntity();
@@ -98,7 +99,7 @@ public class ReviewService {
         reviewEntity.setRestaurant(restaurantEntity);
         reviewEntity.setReviewText(reviewCreate.getReviewText());
         reviewEntity.setRating(reviewCreate.getRating());
-        setTag(reviewCreate.getRestaurantId(), reviewCreate.getRating());
+        setTag(restaurantId, reviewCreate.getRating());
 
         restaurantEntity.getReviews().add(reviewEntity);
         userEntity.getReviews().add(reviewEntity);

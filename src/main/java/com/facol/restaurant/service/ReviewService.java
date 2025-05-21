@@ -3,8 +3,10 @@ package com.facol.restaurant.service;
 import com.facol.restaurant.dto.ReviewCreateDto;
 import com.facol.restaurant.dto.ReviewRequestDto;
 import com.facol.restaurant.dto.ReviewResponseDto;
+import com.facol.restaurant.entity.RestaurantEntity;
 import com.facol.restaurant.entity.ReviewEntity;
 import com.facol.restaurant.entity.Enum.RestaurantEnum;
+import com.facol.restaurant.entity.UserEntity;
 import com.facol.restaurant.exception.NotFoundException;
 import com.facol.restaurant.repository.RestaurantRepositoy;
 import com.facol.restaurant.repository.ReviewRepository;
@@ -145,32 +147,34 @@ public class ReviewService {
         reviewEntity.setRestaurant(restaurantEntity);
         reviewEntity.setReviewText(reviewUpdate.getReviewText());
         reviewEntity.setRating(reviewUpdate.getRating());
+
         setTag(reviewUpdate.getRestaurantId(), reviewUpdate.getRating());
 
         reviewRepository.save(reviewEntity);
     }
 
     public void pathReview(Long id, ReviewRequestDto parcialUpdate) {
-        var reviewEntity =  reviewRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Review não encontrada"));
-        userRepository.findById(parcialUpdate.getUserid())
-                .orElseThrow(() -> new NotFoundException("Id do usuário não encontrado"));
-        restaurantRepositoy.findById(parcialUpdate.getRestaurantId())
-                .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+        var reviewEntity = reviewRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Review não encontrada com o ID: " + id));
 
         if (parcialUpdate.getReviewText() != null) {
             reviewEntity.setReviewText(parcialUpdate.getReviewText());
         }
         if (parcialUpdate.getRating() != null){
             reviewEntity.setRating(parcialUpdate.getRating());
-            setTag(parcialUpdate.getRestaurantId(), parcialUpdate.getRating());
         }
         if (parcialUpdate.getUserid() != null) {
-            reviewEntity.getUser().setId(parcialUpdate.getUserid());
+            UserEntity user = userRepository.findById(parcialUpdate.getUserid())
+                            .orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
+            reviewEntity.getUser().setId(user.getId());
         }
         if (parcialUpdate.getRestaurantId() != null) {
-            reviewEntity.getRestaurant().setId(parcialUpdate.getRestaurantId());
+            RestaurantEntity restaurant = restaurantRepositoy.findById(parcialUpdate.getRestaurantId())
+                            .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+            reviewEntity.getRestaurant().setId(restaurant.getId());
         }
+
+        setTag(reviewEntity.getRestaurant().getId(), reviewEntity.getRating());
         reviewRepository.save(reviewEntity);
     }
 
@@ -217,10 +221,11 @@ public class ReviewService {
     public double media (Long restaurantId, double rating) {
         List<ReviewEntity> reviewList = reviewRepository.findAllByRestaurantId(restaurantId);
         double sum = rating;
+        int total = reviewList.size() + 1;
         for (ReviewEntity review : reviewList) {
             sum += review.getRating();
         }
-        return sum / reviewList.size();
+        return sum / total;
     }
 
     /*
@@ -232,16 +237,15 @@ public class ReviewService {
             var restaurantEntity = restaurantRepositoy.findById(restaurantId)
                     .orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
             restaurantEntity.setTag(RestaurantEnum.MUITO_BOM);
-        }
-        if(num >= 4 && num <= 7) {
+        } else if (num >= 4 && num <= 7) {
             var restaurantEntity = restaurantRepositoy.findById(restaurantId)
                     .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
             restaurantEntity.setTag(RestaurantEnum.BOM);
-        }
-        if (num >= 0 && num <= 3) {
+        } else if (num >= 0 && num <= 3) {
             var restaurantEntity = restaurantRepositoy.findById(restaurantId)
                     .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
             restaurantEntity.setTag(RestaurantEnum.RUIM);
         }
     }
+
 }

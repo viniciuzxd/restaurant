@@ -15,14 +15,14 @@ public class ReviewEntity {
     private String reviewText;
 
     @ManyToOne
-    @JoinColumn(name = "author", referencedColumnName = "id")
+    @JoinColumn(name = "author", referencedColumnName = "name")
     private UserEntity author;
 
     @ManyToOne
     @JoinColumn(name = "restaurantId", referencedColumnName = "id")
     private RestaurantEntity restaurant;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private UserEntity user;
 

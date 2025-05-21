@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RestaurantResponseDto {
-    private long id;
+    private Long id;
     private String name;
     private String address;
     private String tag;

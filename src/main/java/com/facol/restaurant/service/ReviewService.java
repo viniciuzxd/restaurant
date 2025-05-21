@@ -30,7 +30,7 @@ public class ReviewService {
         this.userRepository = userRepository;
     }
 
-    public ReviewResponseDto getReviewById(long id) {
+    public ReviewResponseDto getReviewById(Long id) {
         ReviewEntity reviewEntity = reviewRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Review não encontrada"));
 
@@ -40,7 +40,7 @@ public class ReviewService {
 
         return new ReviewResponseDto(
                 reviewEntity.getId(),
-                reviewEntity.getUser() != null ? reviewEntity.getUser().getId() : null,
+                reviewEntity.getUser() != null ? reviewEntity.getUser().getId(): null,
                 reviewEntity.getRestaurant() != null ? reviewEntity.getRestaurant().getName() : "Restaurante desconhecido",
                 authorName,
                 reviewEntity.getReviewText(),
@@ -58,7 +58,7 @@ public class ReviewService {
     /*
         retornar todas as reviews de um restaurante em especifico paginadas, atraves do id.
     */
-    public Page<ReviewResponseDto> getReviewsByRestaurantId(long restaurantId) {
+    public Page<ReviewResponseDto> getReviewsByRestaurantId(Long restaurantId) {
         restaurantRepositoy.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
 
@@ -86,7 +86,7 @@ public class ReviewService {
     /*
         cria a review, coloca a tag e adiciona a lista das entidades.
     */
-    public void createReview(ReviewCreateDto reviewCreate, long userId, long restaurantId) {
+    public void createReview(ReviewCreateDto reviewCreate, Long userId, Long restaurantId) {
         var userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Id do usuário não encontrado"));
         var restaurantEntity = restaurantRepositoy.findById(restaurantId)
@@ -107,7 +107,7 @@ public class ReviewService {
         reviewRepository.save(reviewEntity);
     }
 
-    public void updateReview(long id,ReviewRequestDto reviewUpdate) {
+    public void updateReview(Long id,ReviewRequestDto reviewUpdate) {
         var reviewEntity =  reviewRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Review não encontrada"));
         var userEntity = userRepository.findById(reviewUpdate.getUserid())
@@ -125,7 +125,31 @@ public class ReviewService {
         reviewRepository.save(reviewEntity);
     }
 
-    public void deleteReview(long id) {
+    public void pathReview(Long id, ReviewRequestDto parcialUpdate) {
+        var reviewEntity =  reviewRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Review não encontrada"));
+        userRepository.findById(parcialUpdate.getUserid())
+                .orElseThrow(() -> new NotFoundException("Id do usuário não encontrado"));
+        restaurantRepositoy.findById(parcialUpdate.getRestaurantId())
+                .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+
+        if (parcialUpdate.getReviewText() != null) {
+            reviewEntity.setReviewText(parcialUpdate.getReviewText());
+        }
+        if (parcialUpdate.getRating() != null){
+            reviewEntity.setRating(parcialUpdate.getRating());
+            setTag(parcialUpdate.getRestaurantId(), parcialUpdate.getRating());
+        }
+        if (parcialUpdate.getUserid() != null) {
+            reviewEntity.getUser().setId(parcialUpdate.getUserid());
+        }
+        if (parcialUpdate.getRestaurantId() != null) {
+            reviewEntity.getRestaurant().setId(parcialUpdate.getRestaurantId());
+        }
+        reviewRepository.save(reviewEntity);
+    }
+
+    public void deleteReview(Long id) {
         var reviewEntity =  reviewRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Review não encontrada"));
         reviewRepository.delete(reviewEntity);
@@ -171,7 +195,7 @@ public class ReviewService {
     /*
         calcular a media de um restaurante.
     */
-    public double media (long restaurantId, double rating) {
+    public double media (Long restaurantId, double rating) {
         List<ReviewEntity> reviewList = reviewRepository.findAllByRestaurantId(restaurantId);
         double sum = rating;
         for (ReviewEntity review : reviewList) {
@@ -183,7 +207,7 @@ public class ReviewService {
     /*
         definir a tag do restaurante apartir de sua media.
     */
-    public void setTag(long restaurantId, double rating) {
+    public void setTag(Long restaurantId, double rating) {
         double num = media(restaurantId, rating);
         if(num >= 8) {
             var restaurantEntity = restaurantRepositoy.findById(restaurantId)

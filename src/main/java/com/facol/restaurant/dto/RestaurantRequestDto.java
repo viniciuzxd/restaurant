@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantRequestDto {
-    @NotBlank(message = "Nome obrigatorio")
     private String name;
-    @NotBlank(message = "Endereço obrigatorio")
     private String address;
 }

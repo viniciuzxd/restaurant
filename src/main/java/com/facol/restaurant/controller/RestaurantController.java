@@ -23,7 +23,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestaurantResponseDto> getRestaurantById(@PathVariable long id) {
+    public ResponseEntity<RestaurantResponseDto> getRestaurantById(@PathVariable Long id) {
         return ResponseEntity.ok(restaurantService.getRestaurantById(id));
     }
 
@@ -34,13 +34,19 @@ public class RestaurantController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateRestaurant(@PathVariable long id, @RequestBody RestaurantRequestDto restaurantRequestDto) {
+    public ResponseEntity<Void> updateRestaurant(@PathVariable Long id, @RequestBody RestaurantRequestDto restaurantRequestDto) {
         restaurantService.updateRestaurant(id, restaurantRequestDto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> patchRestaurant(@PathVariable Long id, @RequestBody RestaurantRequestDto restaurantRequestDto) {
+        restaurantService.patchRestaurant(id, restaurantRequestDto);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable long id) {
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
         restaurantService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

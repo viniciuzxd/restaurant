@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String reviewText;
 
     @ManyToOne

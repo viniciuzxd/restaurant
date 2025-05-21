@@ -16,7 +16,7 @@ import java.util.List;
 public class RestaurantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private String address;
     @Enumerated(EnumType.STRING)

@@ -22,7 +22,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserResponseDto getUserById(long id) {
+    public UserResponseDto getUserById(Long id) {
         UserResponseDto user = userRepository.findById(id)
                 .map(u -> new UserResponseDto(
                         u.getId(),
@@ -80,7 +80,7 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public void updateUser(long id, UserRequestDto userUpdate) {
+    public void updateUser(Long id, UserRequestDto userUpdate) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
@@ -91,9 +91,23 @@ public class UserService {
 
     }
 
+    public void pathUser(Long id, UserRequestDto parcialUpdate) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
+        if (parcialUpdate.getName() != null) {
+            user.setName(parcialUpdate.getName());
+        }
+        if (parcialUpdate.getEmail() != null) {
+            user.setEmail(parcialUpdate.getEmail());
+        }
+        if (parcialUpdate.getPassword() != null) {
+            user.setPassword(parcialUpdate.getPassword());
+        }
+        userRepository.save(user);
+    }
 
-    public void deleteUser(long id) {
+    public void deleteUser(Long id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usúario não Encontrado"));
 

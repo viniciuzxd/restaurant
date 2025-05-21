@@ -82,7 +82,7 @@ public class RestaurantService {
         restaurantRepositoy.save(restaurantEntity);
     }
 
-    public void updateRestaurant(long id, RestaurantRequestDto restaurantUpdate) {
+    public void updateRestaurant(Long id, RestaurantRequestDto restaurantUpdate) {
         RestaurantEntity restaurant = restaurantRepositoy.findById(id)
                 .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
         restaurant.setName(restaurantUpdate.getName());
@@ -90,7 +90,20 @@ public class RestaurantService {
         restaurantRepositoy.save(restaurant);
     }
 
-    public void delete(long id) {
+    public void patchRestaurant(Long id, RestaurantRequestDto parcialUpdate) {
+        RestaurantEntity restaurant = restaurantRepositoy.findById(id)
+                .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
+
+        if (parcialUpdate.getName() != null) {
+            restaurant.setName(parcialUpdate.getName());
+        }
+        if (parcialUpdate.getAddress() != null) {
+            restaurant.setAddress(parcialUpdate.getAddress());
+        }
+        restaurantRepositoy.save(restaurant);
+    }
+
+    public void delete(Long id) {
         RestaurantEntity restaurant = restaurantRepositoy.findById(id)
                 .orElseThrow(() -> new NotFoundException("Restaurante não encontrado"));
         restaurantRepositoy.delete(restaurant);

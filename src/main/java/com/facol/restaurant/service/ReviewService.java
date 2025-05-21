@@ -66,7 +66,32 @@ public class ReviewService {
         int size = 10;
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "id");
 
-        Page<ReviewEntity> reviews = reviewRepository.findAll(pageRequest);
+        Page<ReviewEntity> reviews = reviewRepository.findByRestaurantId(restaurantId, pageRequest);
+
+        List<ReviewResponseDto> dtoList = reviews.stream()
+                .map(review -> new ReviewResponseDto(
+                        review.getId(),
+                        review.getUser().getId(),
+                        review.getRestaurant().getName(),
+                        review.getAuthor().getName(),
+                        review.getReviewText(),
+                        review.getRating()
+                ))
+                .collect(Collectors.toList());
+
+
+        return new PageImpl<>(dtoList, pageRequest, dtoList.size());
+    }
+
+    public Page<ReviewResponseDto> getReviewsByUserId(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+        int page = 0;
+        int size = 10;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "id");
+
+        Page<ReviewEntity> reviews = reviewRepository.findByUserId(userId, pageRequest);
 
         List<ReviewResponseDto> dtoList = reviews.stream()
                 .map(review -> new ReviewResponseDto(
@@ -168,12 +193,6 @@ public class ReviewService {
 
         Page<ReviewEntity> reviewList = reviewRepository.findAll(pageRequest);
 
-        /*
-        GetContent: retorna a lista interna de reviewlist(page)
-        stream: converte a lista em stream, é uma forma funcional de processar dados em sequência
-        map: para cada elemento da lista(user), transforma em um novo objeto UserResponse
-        collect: transformar todos os elementos do stream, você coleta tudo de volta em uma Lista
-        */
         List<ReviewResponseDto> dtoList = reviewList
                 .getContent()
                 .stream()

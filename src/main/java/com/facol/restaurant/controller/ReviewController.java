@@ -33,6 +33,11 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewsByRestaurantId(id));
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByUserId(@PathVariable Long id) {
+        return ResponseEntity.ok(reviewService.getReviewsByUserId(id));
+    }
+
     @PostMapping("/users/{idUsuario}/restaurants/{idRestaurant}")
     public ResponseEntity<Void> createReview(@RequestBody ReviewCreateDto reviewRequestDto, @PathVariable Long idUsuario, @PathVariable Long idRestaurant) {
         reviewService.createReview(reviewRequestDto, idUsuario, idRestaurant);
